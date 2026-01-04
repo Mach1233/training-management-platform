@@ -6,3 +6,6 @@ Project for training platform.
 - main: Stable
 - develop: Dev
 - feature/: Feature branch
+- release/: Release branch
+- hotfix/: Hotfix branch
+
