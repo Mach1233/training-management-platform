@@ -1,0 +1,50 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: [ 'frontend/**' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-test-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - working-directory: frontend
+        run: npm ci
+      - working-directory: frontend
+        name: Lint & Security
+        run: npm run lint && npm audit --audit-level=high
+      - working-directory: frontend
+        name: Test & Coverage
+        run: npm run test:coverage
+      - working-directory: frontend
+        name: Mutation Testing
+        run: npm run test:mutation
+      - working-directory: frontend
+        name: Accessibility Test
+        run: npm run test:a11y
+      - name: SonarCloud
+        uses: sonarsource/sonarcloud-github-action@v2
+        env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}, SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} }
+      - name: CodeQL
+        uses: github/codeql-action/analyze@v3
+      - working-directory: frontend
+        name: Build
+        run: npm run build
+      - working-directory: frontend
+        name: Build Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/training-frontend:${{ github.sha }} .
+      - name: Tag Images
+        run: |
+          docker tag ${{ secrets.DOCKER_USERNAME }}/training-frontend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-frontend:latest
+      - uses: docker/login-action@v3
+        with: { username: ${{ secrets.DOCKER_USERNAME }}, password: ${{ secrets.DOCKER_PASSWORD }} }
+      - name: Push Images
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/training-frontend:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/training-frontend:latest
