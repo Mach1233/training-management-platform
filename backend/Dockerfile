@@ -7,5 +7,6 @@ RUN mvn clean package -DskipTests
 # Stage 2: Run
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+# Note: Adjust the source path for the specific service you want to run
+COPY --from=build /app/course-service/target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]

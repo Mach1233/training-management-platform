@@ -24,7 +24,9 @@ jobs:
         run: mvn org.pitest:pitest-maven:mutationCoverage
       - name: SonarCloud
         uses: sonarsource/sonarcloud-github-action@v2
-        env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}, SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: CodeQL
         uses: github/codeql-action/analyze@v3
       - name: Performance Test
@@ -38,7 +40,7 @@ jobs:
         with: { target: 'http://localhost:8080' }  # Adjust for your app URL
         continue-on-error: true # Warning only for now
       - name: Build Image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} .
+        run: docker build -f backend/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} .
       - name: Tag Images
         run: |
           docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:latest
