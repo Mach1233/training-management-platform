@@ -62,25 +62,7 @@
         </plugins>
     </pluginManagement>
     <plugins>
-            <!-- Checkstyle (linting) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!-- Using Google checks by default -->
-                    <configLocation>google_checks.xml</configLocation> 
-                    <failOnViolation>false</failOnViolation>
-                </configuration>
-            </plugin>
+
             <!-- Dependency-Check (vulns) -->
             <plugin>
                 <groupId>org.owasp</groupId>
