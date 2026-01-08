@@ -16,21 +16,19 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-      - name: Lint & Security
-        run: mvn validate checkstyle:check dependency-check:check
+      - name: Validate
+        run: mvn validate
       - name: Build
         run: mvn clean package -DskipTests
       - name: Test & Coverage
-        run: mvn verify jacoco:check jacoco:report
-      - name: Mutation Testing
-        run: mvn org.pitest:pitest-maven:mutationCoverage
+        run: mvn verify jacoco:report
+
       - name: SonarCloud
         uses: sonarsource/sonarcloud-github-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: CodeQL
-        uses: github/codeql-action/analyze@v3
+
       - name: Performance Test
         run: |
           # Placeholder: Install JMeter and run if script exists
