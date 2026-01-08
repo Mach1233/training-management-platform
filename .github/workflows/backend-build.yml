@@ -44,14 +44,16 @@ jobs:
         run: docker build -f backend/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} .
       - name: Tag Images
         run: |
+          SAFE_REF_NAME=$(echo "${{ github.ref_name }}" | sed 's/\//-/g')
           docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:latest
-          docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.ref_name }}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:$SAFE_REF_NAME
       - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Push Images
         run: |
+          SAFE_REF_NAME=$(echo "${{ github.ref_name }}" | sed 's/\//-/g')
           docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.ref_name }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:$SAFE_REF_NAME
