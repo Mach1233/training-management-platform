@@ -13,7 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
-        with: { java-version: '21', distribution: 'temurin' }
+        with:
+          java-version: '21'
+          distribution: 'temurin'
       - name: Lint & Security
         run: mvn validate checkstyle:check dependency-check:check
       - name: Build
@@ -24,7 +26,9 @@ jobs:
         run: mvn org.pitest:pitest-maven:mutationCoverage
       - name: SonarCloud
         uses: sonarsource/sonarcloud-github-action@v2
-        env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}, SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: CodeQL
         uses: github/codeql-action/analyze@v3
       - name: Performance Test
@@ -34,17 +38,22 @@ jobs:
              echo "Running JMeter test..."
           fi
       - name: ZAP Security Scan
-        uses: zaproxy/action-baseline@v0.12.0
-        with: { target: 'http://localhost:8080' }  # Adjust for your app URL
         continue-on-error: true # Warning only for now
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: 'http://localhost:8080'  # Adjust for your app URL
       - name: Build Image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} .
       - name: Tag Images
         run: |
           docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:latest
+          docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.ref_name }}
       - uses: docker/login-action@v3
-        with: { username: ${{ secrets.DOCKER_USERNAME }}, password: ${{ secrets.DOCKER_PASSWORD }} }
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Push Images
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.ref_name }}
