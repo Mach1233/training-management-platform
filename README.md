@@ -14,6 +14,10 @@ docker compose -f docker/docker-compose.yml up -d
 
 For full details, credentials, and troubleshooting, see [Docker Documentation](docs/README.md).
 
+## Development Standards
+This project enforces strict quality and security gates including Checkstyle, coverage (80%), and mutation testing. 
+See [Development Guide](docs/DEVELOPMENT.md) for details.
+
 ## Branches
 - main: Stable
 - develop: Dev

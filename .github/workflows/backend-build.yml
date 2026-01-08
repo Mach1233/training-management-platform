@@ -24,13 +24,15 @@ jobs:
         run: mvn verify jacoco:check jacoco:report
       - name: Mutation Testing
         run: mvn org.pitest:pitest-maven:mutationCoverage
-      - name: SonarCloud
-        uses: sonarsource/sonarcloud-github-action@v2
+
+      - name: SonarCloud Scan
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn sonar:sonar -Dsonar.projectKey=Mach1233_training-management-platform
       - name: CodeQL
         uses: github/codeql-action/analyze@v3
+
       - name: Performance Test
         run: |
           # Placeholder: Install JMeter and run if script exists
@@ -43,17 +45,19 @@ jobs:
         with:
           target: 'http://localhost:8080'  # Adjust for your app URL
       - name: Build Image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} .
+        run: docker build -f backend/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} .
       - name: Tag Images
         run: |
+          SAFE_REF_NAME=$(echo "${{ github.ref_name }}" | sed 's/\//-/g')
           docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:latest
-          docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.ref_name }}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:$SAFE_REF_NAME
       - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Push Images
         run: |
+          SAFE_REF_NAME=$(echo "${{ github.ref_name }}" | sed 's/\//-/g')
           docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.ref_name }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/training-backend:$SAFE_REF_NAME
