@@ -41,7 +41,7 @@ jobs:
         with:
           target: 'http://localhost:8080'  # Adjust for your app URL
       - name: Build Image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} .
+        run: docker build -f backend/Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} .
       - name: Tag Images
         run: |
           docker tag ${{ secrets.DOCKER_USERNAME }}/training-backend:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/training-backend:latest
