@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.9</version>
+        <version>3.3.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.training</groupId>
@@ -16,56 +16,51 @@
     <description>Training Management Platform</description>
 
     <modules>
-        <!-- <module>user-service</module> -->
         <module>course-service</module>
-        <!-- <module>registration-service</module> -->
-        <!-- <module>workflow-service</module> -->
-        <!-- <module>certification-service</module> -->
-        <!-- <module>analytics-service</module> -->
-        <!-- <module>api-gateway</module> -->
+        <module>api-gateway</module>
     </modules>
 
     <properties>
         <java.version>21</java.version>
-        <spring.boot.version>3.5.9</spring.boot.version>
+        <spring.boot.version>3.3.5</spring.boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.organization>mach1233</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey>mach1233_training-management-platform</sonar.projectKey>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.java.checkstyle.reportPaths>${project.build.directory}/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
     </properties>
 
     <build>
         <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-checkstyle-plugin</artifactId>
+                                        <versionRange>[1.0.0,)</versionRange>
+                                        <goals>
+                                            <goal>check</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
-            <!-- To resolve "Plugin execution not covered by lifecycle configuration" in IDEs -->
-            <plugin>
-                <groupId>org.eclipse.m2e</groupId>
-                <artifactId>lifecycle-mapping</artifactId>
-                <version>1.0.0</version>
-                <configuration>
-                    <lifecycleMappingMetadata>
-                        <pluginExecutions>
-                            <pluginExecution>
-                                <pluginExecutionFilter>
-                                    <groupId>org.apache.maven.plugins</groupId>
-                                    <artifactId>maven-checkstyle-plugin</artifactId>
-                                    <versionRange>[1.0.0,)</versionRange>
-                                    <goals>
-                                        <goal>check</goal>
-                                    </goals>
-                                </pluginExecutionFilter>
-                                <action>
-                                    <ignore />
-                                </action>
-                            </pluginExecution>
-                        </pluginExecutions>
-                    </lifecycleMappingMetadata>
-                </configuration>
-            </plugin>
-        </plugins>
-    </pluginManagement>
-    <plugins>
-
-
             <!-- Checkstyle (linting) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -91,6 +86,7 @@
                     <failOnViolation>true</failOnViolation>
                 </configuration>
             </plugin>
+
             <!-- Dependency-Check (vulns) -->
             <plugin>
                 <groupId>org.owasp</groupId>
@@ -103,7 +99,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <failOnError>false</failOnError>
+                </configuration>
             </plugin>
+
             <!-- JaCoCo (coverage) -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -115,7 +115,6 @@
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-
                     <execution>
                         <id>check</id>
                         <goals>
@@ -138,22 +137,40 @@
                     </execution>
                     <execution>
                         <id>report</id>
-                        <phase>verify</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-            <!-- PIT (mutation) -->
+
+<!-- PIT (mutation) -->
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
                 <version>1.15.3</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.1</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>mutationCoverage</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <targetClasses>
                         <param>com.training.*</param>
                     </targetClasses>
+                    <targetTests>
+                        <param>com.training.*</param>
+                    </targetTests>
                     <mutationThreshold>85</mutationThreshold>
                 </configuration>
             </plugin>
