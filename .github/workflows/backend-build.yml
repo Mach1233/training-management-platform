@@ -137,6 +137,7 @@ jobs:
 
       - name: Push Images for ${{ matrix.service }}
         run: |
+          SAFE_REF_NAME=$(echo "${{ github.ref_name }}" | sed 's/\//-/g')
           docker push ${{ secrets.DOCKER_USERNAME }}/training-${{ matrix.service }}:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/training-${{ matrix.service }}:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/training-${{ matrix.service }}:$SAFE_REF_NAME
