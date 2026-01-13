@@ -20,7 +20,7 @@ jobs:
           CHANGED=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep -E '^(api-gateway|.*-service)/' | cut -d '/' -f1 | sort -u | jq -R -s -c 'split("\n")[:-1]' || echo '[]')
           echo "services=$CHANGED" >> $GITHUB_OUTPUT
 
-  build-test-push:
+  build-test-push-backend:
     needs: detect-changed-services
     if: ${{ fromJson(needs.detect-changed-services.outputs.services) != '[]' }}
     runs-on: ubuntu-latest
