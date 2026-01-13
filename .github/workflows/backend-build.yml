@@ -16,8 +16,18 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Cache Dependency Check Data
+        uses: actions/cache@v4
+        with:
+          path: '**/target/dependency-check-data'
+          key: ${{ runner.os }}-dependency-check-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-dependency-check-
+
       - name: Lint & Security
-        run: mvn validate checkstyle:check dependency-check:check
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: mvn validate checkstyle:check dependency-check:check -Dnvd.api.key=$NVD_API_KEY
       - name: Build
         run: mvn clean package -DskipTests
       - name: Test & Coverage

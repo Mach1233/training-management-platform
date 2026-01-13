@@ -29,6 +29,7 @@
         <sonar.projectKey>mach1233_training-management-platform</sonar.projectKey>
         <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.java.checkstyle.reportPaths>${project.build.directory}/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
+        <nvd.api.key></nvd.api.key>
     </properties>
 
     <build>
@@ -101,6 +102,8 @@
                 </executions>
                 <configuration>
                     <failOnError>false</failOnError>
+                    <nvdApiKey>${nvd.api.key}</nvdApiKey>
+                    <dataDirectory>${project.build.directory}/dependency-check-data</dataDirectory>
                 </configuration>
             </plugin>
 
