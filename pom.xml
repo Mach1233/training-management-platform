@@ -102,7 +102,6 @@
                 </executions>
                 <configuration>
                     <failOnError>false</failOnError>
-                    <nvdApiKey>${nvd.api.key}</nvdApiKey>
                     <dataDirectory>${project.build.directory}/dependency-check-data</dataDirectory>
                 </configuration>
             </plugin>
@@ -120,6 +119,7 @@
                     </execution>
                     <execution>
                         <id>check</id>
+                        <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -185,4 +185,25 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>nvd-auth</id>
+            <activation>
+                <property>
+                    <name>nvd.api.key</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <configuration>
+                            <nvdApiKey>${nvd.api.key}</nvdApiKey>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
