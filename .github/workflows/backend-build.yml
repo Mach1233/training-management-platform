@@ -38,9 +38,9 @@ jobs:
           FORCE_ALL="${{ github.event_name == 'workflow_dispatch' }}"
 
           if [ -n "$GLOBAL_CHANGES" ] || [ "$FORCE_ALL" == "true" ]; then
-            echo "Global changes or manual trigger detected. Building ALL services."
-            # List all directories ending in -service, plus api-gateway
-            ALL_SERVICES=$(ls -d *-service api-gateway | jq -R -s -c 'split("\n")[:-1]')
+            echo "Global changes or manual trigger detected. Building ALL ACTIVE services."
+            # Only list services that are actually implemented (avoiding empty folders)
+            ALL_SERVICES='["api-gateway", "course-service"]'
             echo "services=$ALL_SERVICES" >> $GITHUB_OUTPUT
           else
             # 3. CHECK FOR SERVICE-SPECIFIC CHANGES
@@ -63,6 +63,11 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
 
       - name: Cache Maven deps
         uses: actions/cache@v4
