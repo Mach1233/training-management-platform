@@ -40,7 +40,7 @@ jobs:
           if [ -n "$GLOBAL_CHANGES" ] || [ "$FORCE_ALL" == "true" ]; then
             echo "Global changes or manual trigger detected. Building ALL ACTIVE services."
             # Only list services that are actually implemented (avoiding empty folders)
-            ALL_SERVICES='["api-gateway", "course-service"]'
+            ALL_SERVICES='["api-gateway"]'
             echo "services=$ALL_SERVICES" >> $GITHUB_OUTPUT
           else
             # 3. CHECK FOR SERVICE-SPECIFIC CHANGES
