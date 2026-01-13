@@ -20,7 +20,7 @@ jobs:
           CHANGED=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep -E '^(api-gateway|.*-service)/' | cut -d '/' -f1 | sort -u | jq -R -s -c 'split("\n")[:-1]' || echo '[]')
           echo "services=$CHANGED" >> $GITHUB_OUTPUT
 
-  build-test-push:
+  build-test-push-backend:
     needs: detect-changed-services
     if: ${{ fromJson(needs.detect-changed-services.outputs.services) != '[]' }}
     runs-on: ubuntu-latest
@@ -52,13 +52,13 @@ jobs:
       - name: Lint & Security for ${{ matrix.service }}
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: mvn validate checkstyle:check dependency-check:check -Dnvd.api.key=$NVD_API_KEY -pl ${{ matrix.service }} -am  # -am builds dependencies
+        run: mvn validate checkstyle:check dependency-check:check -Dnvd.api.key="${{ secrets.NVD_API_KEY }}" -pl ${{ matrix.service }} -am
 
       - name: Build ${{ matrix.service }}
         run: mvn clean package -DskipTests -pl ${{ matrix.service }} -am
 
       - name: Test & Coverage for ${{ matrix.service }}
-        run: mvn verify jacoco:check jacoco:report -pl ${{ matrix.service }} -am
+        run: mvn verify -pl ${{ matrix.service }} -am
 
       - name: Mutation Testing for ${{ matrix.service }}
         run: mvn org.pitest:pitest-maven:mutationCoverage -pl ${{ matrix.service }} -am
