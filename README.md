@@ -75,7 +75,8 @@ The platform is designed to:
 
 ```markdown
 ### Desktop View
-![Desktop](docs/training-management-images/1.png)
+<img width="1864" height="880" alt="image" src="https://github.com/user-attachments/assets/61d61eb1-3f18-4d06-9176-d0095af42574" />
+
 
 ### Demo Animation
 ![Demo](docs/images/demo.gif)
