@@ -24,7 +24,7 @@ The platform is designed to:
 ## 🏗 System Architecture & Layers
 
 ### Layered Architecture
-<img width="2186" height="1107" alt="image" src="https://github.com/user-attachments/assets/8909bb8c-3c91-49ab-981a-0d73734d2a0a" />
+<img width="2186" height="1307" alt="image" src="https://github.com/user-attachments/assets/8909bb8c-3c91-49ab-981a-0d73734d2a0a" />
 
 
 
