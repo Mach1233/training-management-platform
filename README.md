@@ -1,173 +1,108 @@
-# 🏢 Training Management Platform (Microservices Architecture)
+# 🏢 Training Management Platform
+### Cloud-Native Microservices System (Architecture-First Design)
 
-An enterprise-grade Training Management Platform built using a distributed microservices architecture.
+This project demonstrates a **production-grade, enterprise-style microservices platform** designed for training management.  
+It was built using a **distributed microservices architecture**, secure authentication, event-driven messaging, and modern DevOps practices.  
 
-This project demonstrates modern cloud-native system design using Spring Boot microservices, API Gateway, Keycloak authentication, asynchronous messaging, and a Next.js frontend.
-
-⚠️ The platform is currently under active development. Core architectural components are implemented, and business services are being progressively integrated.
-
----
-
-## 🏗 Architecture Overview
-
-The system follows a distributed microservices pattern with:
-
-- API Gateway (Spring Boot)
-- Keycloak (OAuth2 / OpenID Connect)
-- Independent Spring Boot Microservices
-- Asynchronous communication (Kafka & RabbitMQ)
-- Next.js Frontend
-- CI/CD pipeline design
-- Containerized deployment strategy
+> ⚠️ Note: Core architecture and infrastructure are fully designed and implemented. Business services are under progressive development. The focus is on **system design, security, scalability, and deployment readiness**.
 
 ---
 
-## 🔐 Authentication & Security
+## 🚀 High-Level Vision
 
-Authentication is handled via Keycloak:
+The platform is designed to:
 
-- OAuth2 Authorization Server
-- JWT token validation
-- Role-Based Access Control (RBAC)
-- Centralized identity management
-
-All requests pass through the API Gateway, which validates tokens before routing to downstream services.
-
----
-
-## 🧩 Microservices Design (Planned & Partially Implemented)
-
-Planned services include:
-
-- User Service
-- Course Service
-- Enrollment Service
-- Notification Service
-- Training Session Service
-
-Each service:
-- Independent database
-- Independent deployment
-- REST API exposure
-- Async event publishing/subscribing
+- Manage courses, users, enrollments, sessions, and notifications  
+- Support multiple roles with **Keycloak authentication** (OAuth2, JWT, RBAC)  
+- Enable asynchronous event-driven communication via **Kafka and RabbitMQ**  
+- Scale independently per service  
+- Integrate fully with **CI/CD pipelines** for production-ready deployment  
+- Demonstrate **senior-level cloud-native and DevOps engineering practices**
 
 ---
 
-## 🔄 Asynchronous Messaging Architecture
+## 🏗 System Architecture & Layers
 
-To ensure loose coupling and scalability:
+### Layered Architecture
 
-Kafka:
-- Event streaming
-- User registration events
-- Enrollment events
+[ Users ]
+│
+▼
+[ Next.js Frontend ]
+│ HTTPS
+▼
+[ API Gateway (Spring Boot) ]
+│ Validates JWT / Routes requests
+▼
++---------------------------+
+| Microservices Layer |
++---------------------------+
+│ User Service (DB) │
+│ Course Service (DB) │
+│ Enrollment Service (DB) │
+│ Notification Service │
++---------------------------+
+│
+▼
+[ Asynchronous Messaging Layer ]
+├─ Kafka: domain events, system events
+└─ RabbitMQ: notifications queue
 
-RabbitMQ:
-- Notification dispatch
-- Email/SMS queue handling
+[ Database Layer ]
+└─ Independent DB per microservice (PostgreSQL / MySQL)
 
-This hybrid approach allows:
-- Event-driven communication
-- Resilience
-- Horizontal scaling
-- Failure isolation
+Deployment:
+Docker → CI/CD (GitHub Actions) → Kubernetes Cluster
+
+
+> **Rationale:**  
+> - **API Gateway** centralizes authentication, logging, and routing.  
+> - **Keycloak** provides secure, scalable identity management.  
+> - **Independent microservices + DBs** allow horizontal scaling and failure isolation.  
+> - **Kafka + RabbitMQ hybrid** provides robust event-driven architecture: Kafka for domain events, RabbitMQ for reliable notifications.  
+> - **Docker + Kubernetes** ensures environment parity, reproducibility, and cloud readiness.
 
 ---
 
-## 🌐 API Gateway
+## 🔐 Security & Authentication
 
-Implemented using Spring Boot.
+- **Keycloak** for centralized OAuth2 / OpenID Connect  
+- JWT-based token validation at API Gateway  
+- RBAC enforcing least privilege access  
+- Secure communication between services (internal traffic only)  
+- Secrets managed via environment variables / planned Vault integration
 
-Responsibilities:
-- Central routing
-- Token validation
-- Load balancing
-- Cross-cutting concerns handling
+---
+
+## 🧩 Microservices Design Principles
+
+- Independently deployable  
+- Stateless services  
+- Database per service  
+- Async event-driven communication  
+- Resilient to failures  
+- Horizontal scaling enabled  
+
+> **Design decisions explained:**  
+> - **Spring Boot**: mature ecosystem, microservices-ready, integrates with Kafka/RabbitMQ  
+> - **Next.js frontend**: performant, responsive, SEO-ready, easy integration with API Gateway  
+> - **Hybrid async messaging**: separates critical notifications from domain events for better reliability
 
 ---
 
 ## 🎨 Frontend
 
-Built with Next.js.
+- Responsive landing page (Next.js)  
+- Smooth animations (CSS / Framer Motion)  
+- Validates UI/UX standards  
+- Mobile-first design  
+- Landing page can serve as portfolio showcase  
 
-- Modern responsive landing page
-- Authentication-ready structure
-- API integration ready
-- Optimized performance
+**Embed screenshots / demo GIF:**
 
-The landing page validates the UI/UX design direction of the platform.
+```markdown
+### Desktop View
+![Desktop](docs/images/landing-desktop.png)
 
----
-
-## 🚀 DevOps & CI/CD Design
-
-Planned pipeline:
-
-- Service-level Dockerization
-- GitHub Actions pipeline
-- Multi-stage Docker builds
-- Container registry push
-- Kubernetes deployment
-- Environment-based configuration
-
-Future Deployment Target:
-- Kubernetes cluster
-- Containerized microservices
-- Externalized configuration
-- Secure secrets management
-
----
-
-## 📐 Scalability Strategy
-
-- Stateless services
-- Independent scaling
-- Async messaging for decoupling
-- Gateway-level routing
-- Token-based security
-- Cloud-ready containerization
-
----
-
-## 🧠 Engineering Focus
-
-This project demonstrates:
-
-- Distributed systems architecture
-- API Gateway pattern
-- Centralized authentication with Keycloak
-- Event-driven design principles
-- Cloud-native system planning
-- CI/CD architectural thinking
-
----
-
-## 📌 Current Status
-
-✔ API Gateway implemented  
-✔ Keycloak integration configured  
-✔ Landing page completed  
-✔ Microservices architecture designed  
-⚠ Business services under development  
-⚠ Full deployment pipeline pending  
-
----
-
-## 🔮 Future Roadmap
-
-- Complete User Service
-- Complete Course Service
-- Implement Kafka event producers/consumers
-- Implement RabbitMQ notification service
-- Full Docker Compose local environment
-- Kubernetes deployment
-- Observability stack (Prometheus + Grafana)
-- Centralized logging (ELK)
-
----
-
-## 👨‍💻 Author
-
-Architected and developed as a cloud-native distributed system project.
-
-Focus: Microservices | Security | Event-Driven Systems | DevOps Integration
+### Demo Animation
+![Demo](docs/images/demo.gif)
