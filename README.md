@@ -71,12 +71,14 @@ The platform is designed to:
 - Mobile-first design  
 - Landing page can serve as portfolio showcase  
 
-**Embed screenshots / demo GIF:**
+
 
 ---
 
 ## landing page
 <img width="1864" height="880" alt="image" src="https://github.com/user-attachments/assets/61d61eb1-3f18-4d06-9176-d0095af42574" />
+
+**Embed screenshots / demo GIF:**
 ```markdown
 ### Desktop View
 ![Demo](docs/training-management-images/*.png)
