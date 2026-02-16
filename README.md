@@ -75,7 +75,7 @@ The platform is designed to:
 
 ```markdown
 ### Desktop View
-![Desktop](docs/images/landing-desktop.png)
+![Desktop](docs/training-management-images/1.png)
 
 ### Demo Animation
 ![Demo](docs/images/demo.gif)
