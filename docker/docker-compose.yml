@@ -1,0 +1,88 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: training-postgres
+    secrets:
+      - postgres_password
+      - training_admin_password
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - training-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    container_name: training-keycloak
+    secrets:
+      - training_admin_password
+      - keycloak_admin_password
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: training_platform
+      KC_DB_USERNAME: training_admin
+      KC_HOSTNAME: localhost
+      KEYCLOAK_ADMIN: admin
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        export KEYCLOAK_ADMIN_PASSWORD=$$(cat /run/secrets/keycloak_admin_password | tr -d '\r') &&
+        export KC_DB_PASSWORD=$$(cat /run/secrets/training_admin_password | tr -d '\r') &&
+        exec /opt/keycloak/bin/kc.sh start-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - training-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: training-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - training-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: training-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@training.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin_secure_2026
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - training-network
+
+networks:
+  training-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+  training_admin_password:
+    file: ./secrets/training_admin_password.txt
+  keycloak_admin_password:
+    file: ./secrets/keycloak_admin_password.txt
