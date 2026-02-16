@@ -73,10 +73,12 @@ The platform is designed to:
 
 **Embed screenshots / demo GIF:**
 
+---
+
+## landing page
+<img width="1864" height="880" alt="image" src="https://github.com/user-attachments/assets/61d61eb1-3f18-4d06-9176-d0095af42574" />
 ```markdown
 ### Desktop View
-<img width="1864" height="880" alt="image" src="https://github.com/user-attachments/assets/61d61eb1-3f18-4d06-9176-d0095af42574" />
-
-
+![Demo](docs/training-management-images/*.png)
 ### Demo Animation
 ![Demo](docs/images/demo.gif)
