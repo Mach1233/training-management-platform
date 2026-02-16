@@ -5,6 +5,7 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   detect-changed-services:
@@ -14,11 +15,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # For git diff
+          fetch-depth: 0
+
       - id: changed
         run: |
-          CHANGED=$(git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep -E '^(api-gateway|.*-service)/' | cut -d '/' -f1 | sort -u | jq -R -s -c 'split("\n")[:-1]' || echo '[]')
-          echo "services=$CHANGED" >> $GITHUB_OUTPUT
+          # 1. IDENTIFY THE CHANGE RANGE
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BASE_SHA=${{ github.event.pull_request.base.sha }}
+            HEAD_SHA=${{ github.event.pull_request.head.sha }}
+          else
+            BASE_SHA=${{ github.event.before }}
+            HEAD_SHA=${{ github.sha }}
+            # Handle first push or force push edge cases
+            if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" == "0000000000000000000000000000000000000000" ]; then
+               BASE_SHA=${{ github.sha }}~1
+            fi
+          fi
+
+          # 2. CHECK FOR GLOBAL CHANGES (Build All)
+          # If pom.xml, .github, or this workflow changed, build everything.
+          GLOBAL_CHANGES=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E 'pom.xml|\.github/' || true)
+          FORCE_ALL="${{ github.event_name == 'workflow_dispatch' }}"
+
+          if [ -n "$GLOBAL_CHANGES" ] || [ "$FORCE_ALL" == "true" ]; then
+            echo "Global changes or manual trigger detected. Building ALL ACTIVE services."
+            # Only list services that are actually implemented (avoiding empty folders)
+            ALL_SERVICES='["api-gateway"]'
+            echo "services=$ALL_SERVICES" >> $GITHUB_OUTPUT
+          else
+            # 3. CHECK FOR SERVICE-SPECIFIC CHANGES
+            CHANGED=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E '^(api-gateway|.*-service)/' | cut -d '/' -f1 | sort -u | jq -R -s -c 'split("\n")[:-1]' || echo '[]')
+            echo "services=$CHANGED" >> $GITHUB_OUTPUT
+            echo "Detected changes in: $CHANGED"
+          fi
 
   build-test-push-backend:
     needs: detect-changed-services
@@ -34,6 +63,11 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
 
       - name: Cache Maven deps
         uses: actions/cache@v4
@@ -103,6 +137,7 @@ jobs:
 
       - name: Push Images for ${{ matrix.service }}
         run: |
+          SAFE_REF_NAME=$(echo "${{ github.ref_name }}" | sed 's/\//-/g')
           docker push ${{ secrets.DOCKER_USERNAME }}/training-${{ matrix.service }}:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/training-${{ matrix.service }}:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/training-${{ matrix.service }}:$SAFE_REF_NAME
