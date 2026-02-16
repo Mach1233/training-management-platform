@@ -24,35 +24,8 @@ The platform is designed to:
 ## 🏗 System Architecture & Layers
 
 ### Layered Architecture
+<img width="2186" height="1107" alt="image" src="https://github.com/user-attachments/assets/8909bb8c-3c91-49ab-981a-0d73734d2a0a" />
 
-[ Users ]
-│
-▼
-[ Next.js Frontend ]
-│ HTTPS
-▼
-[ API Gateway (Spring Boot) ]
-│ Validates JWT / Routes requests
-▼
-+---------------------------+
-| Microservices Layer |
-+---------------------------+
-│ User Service (DB) │
-│ Course Service (DB) │
-│ Enrollment Service (DB) │
-│ Notification Service │
-+---------------------------+
-│
-▼
-[ Asynchronous Messaging Layer ]
-├─ Kafka: domain events, system events
-└─ RabbitMQ: notifications queue
-
-[ Database Layer ]
-└─ Independent DB per microservice (PostgreSQL / MySQL)
-
-Deployment:
-Docker → CI/CD (GitHub Actions) → Kubernetes Cluster
 
 
 > **Rationale:**  
